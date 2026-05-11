@@ -79,3 +79,63 @@ I created TaskFlow to solve a real problem many teams face - keeping track of wh
 ## 🛠️ Technology Stack
 
 ### Backend
+├── Node.js (v14+) - JavaScript runtime
+├── Express.js - Web framework for APIs
+├── MongoDB Atlas - Cloud NoSQL database
+├── bcryptjs - Password hashing
+└── dotenv - Environment variables
+
+
+### Frontend
+├── HTML5 - Structure
+├── CSS3 - Styling (modern gradients, flexbox, grid)
+├── Vanilla JavaScript - No frameworks, pure JS
+└── Responsive Design - Works on mobile, tablet, desktop
+
+
+### Deployment
+└── Railway.app - Cloud hosting (free tier)
+
+
+---
+
+## 📊 Database Schema
+
+### Users Collection
+```json
+{
+  "_id": "ObjectId",
+  "name": "String (required)",
+  "email": "String (required, unique)",
+  "password": "String (hashed with bcrypt)",
+  "role": "String ('admin' or 'member')",
+  "createdAt": "Date"
+}
+
+Project Collection
+{
+  "_id": "ObjectId",
+  "name": "String (required)",
+  "description": "String",
+  "createdAt": "Date",
+  "createdBy": "String (user email or ID)"
+}
+
+Task Collection
+{
+  "_id": "ObjectId",
+  "title": "String (required)",
+  "projectId": "ObjectId (references projects)",
+  "assigneeEmail": "String (references users.email)",
+  "dueDate": "Date (optional)",
+  "status": "String ('pending', 'in-progress', 'done')",
+  "createdAt": "Date",
+  "updatedAt": "Date"
+} 	 	
+
+Relationship Diagram
+Users (1) ──────< Tasks (Many)
+             (assigneeEmail)
+
+Projects (1) ──< Tasks (Many)
+             (projectId)
