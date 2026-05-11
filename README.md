@@ -1,10 +1,5 @@
 # 📋 TaskFlow - Team Task Manager
 
-![Version](https://img.shields.io/badge/version-2.0-blue)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green)
-![Node.js](https://img.shields.io/badge/Node.js-Express-green)
-![License](https://img.shields.io/badge/license-MIT-yellow)
-
 ## 🌐 Live Demo
 
 **Your Live URL Here:** `https://your-app.up.railway.app`
