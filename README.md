@@ -1,141 +1,125 @@
 # 📋 TaskFlow - Team Task Manager
 
-## 🌐 Live Demo
-
-**Your Live URL Here:** `https://your-app.up.railway.app`
+> A complete full-stack team task management application with role-based access control, real database, and REST APIs.
 
 ---
 
-## 📝 Project Overview
+## 🌐 Live URL
 
-TaskFlow is a **full-stack team task management application** built for the Full-Stack Developer Assessment. It allows teams to collaborate on projects, assign tasks, track progress, and manage work with different permission levels.
+**https://your-app-name.up.railway.app**
 
-### 🎯 Why I Built This
-
-I created TaskFlow to solve a real problem many teams face - keeping track of who is doing what. Whether you're managing a small team or a large department, TaskFlow gives you clarity on project status, task assignments, and deadlines.
+*(Replace with your actual Railway deployment URL after deploying)*
 
 ---
 
-## ✨ Features (All Requirements Completed)
+## 📝 Project Description
 
-### 🔐 Authentication System
-| Feature | Status | Description |
-|---------|--------|-------------|
-| User Signup | ✅ | Create new account with name, email, password |
-| User Login | ✅ | Secure login with password verification |
-| Password Security | ✅ | Passwords hashed using bcrypt (industry standard) |
-| Session Management | ✅ | User stays logged in during browser session |
+TaskFlow is a **team task management application** that helps teams organize projects, assign tasks, track progress, and meet deadlines. Built as a full-stack application with proper database, REST APIs, and role-based access control.
 
-### 📁 Project Management
-| Feature | Status | Who Can Use |
-|---------|--------|-------------|
-| Create Projects | ✅ | Only Admin |
-| View All Projects | ✅ | Admin sees all, Member sees assigned only |
-| Delete Projects | ✅ | Only Admin (with cascade delete of tasks) |
-| Project Descriptions | ✅ | Add details to each project |
+### What Problem Does It Solve?
 
-### ✅ Task Management
-| Feature | Status | Description |
-|---------|--------|-------------|
-| Create Tasks | ✅ | Add title, assignee, due date, project |
-| Assign Tasks | ✅ | Assign to any registered user by email |
-| Status Tracking | ✅ | 3 statuses: Pending → In Progress → Done |
-| Due Date Tracking | ✅ | Set deadlines for each task |
-| Overdue Detection | ✅ | Tasks past due date turn red automatically |
-| Real-time Updates | ✅ | Status changes reflect immediately |
+Teams struggle to track who is doing what. TaskFlow provides:
+- Clear visibility of all tasks and projects
+- Proper role separation (Admins manage, Members execute)
+- Deadline tracking with overdue alerts
+- Real-time status updates
 
-### 📊 Dashboard Analytics
-| Metric | Description |
-|--------|-------------|
-| Total Tasks | Count of all tasks in system |
-| Pending Tasks | Tasks not started yet |
-| In Progress | Tasks being worked on |
-| Completed | Finished tasks |
-| Overdue | Tasks past deadline (red alert) |
+---
 
-### 🛡️ Role-Based Access Control (RBAC)
+## ✅ Features Checklist (All Requirements Met)
 
+### 1. Authentication ✅
+- [x] User Signup with name, email, password
+- [x] User Login with email and password
+- [x] Password hashing using bcrypt (secure)
+- [x] Session persistence across page reloads
+
+### 2. Project & Team Management ✅
+- [x] Create new projects (Admin only)
+- [x] View all projects with descriptions
+- [x] Delete projects (Admin only, cascade deletes tasks)
+- [x] Team members can view assigned projects
+
+### 3. Task Creation, Assignment & Status Tracking ✅
+- [x] Create tasks with title, project, assignee, due date
+- [x] Assign tasks to any registered user by email
+- [x] Three status levels: Pending → In Progress → Done
+- [x] Update task status in real-time
+- [x] Due date validation and tracking
+
+### 4. Dashboard (Tasks, Status, Overdue) ✅
+- [x] Real-time task statistics (total, pending, progress, done)
+- [x] Automatic overdue task detection (red highlight)
+- [x] Personal tasks section (shows only assigned tasks)
+- [x] Complete tasks table for team-wide view
+
+### 5. REST APIs + Database ✅
+- [x] Full RESTful API endpoints
+- [x] MongoDB Atlas (NoSQL cloud database)
+- [x] Proper data relationships (Users → Projects → Tasks)
+- [x] Indexed fields for fast queries
+
+### 6. Validations & Relationships ✅
+- [x] Email format validation
+- [x] Duplicate email check during signup
+- [x] Project existence validation before task creation
+- [x] User existence validation before task assignment
+- [x] One-to-many relationships between Users/Tasks and Projects/Tasks
+
+### 7. Role-Based Access Control (RBAC) ✅
 | Action | Admin 👑 | Member 👤 |
 |--------|----------|-----------|
 | Create Project | ✅ Yes | ❌ No |
 | Delete Project | ✅ Yes | ❌ No |
-| Create Task | ✅ Yes | ✅ Yes (limited) |
-| View All Tasks | ✅ Yes | ❌ Only assigned tasks |
-| Update Any Task | ✅ Yes | ❌ Only own tasks |
+| Create Task | ✅ Yes | ✅ Yes |
+| View All Tasks | ✅ Yes | ❌ Only assigned |
+| Update Any Task | ✅ Yes | ❌ Only own |
 | Delete Task | ✅ Yes | ❌ No |
-| View All Projects | ✅ Yes | ❌ Only projects with assigned tasks |
 
-### 🗄️ Database & APIs
-| Requirement | Status | Implementation |
-|-------------|--------|----------------|
-| Real Database | ✅ | MongoDB Atlas (NoSQL cloud database) |
-| REST APIs | ✅ | Full CRUD endpoints |
-| Data Relationships | ✅ | Users → Projects → Tasks |
-| Input Validation | ✅ | Email, duplicate, existence checks |
-| Error Handling | ✅ | Proper error messages for all operations |
+### 8. Deployment ✅
+- [x] Deployed on Railway
+- [x] HTTPS enabled
+- [x] Environment variables configured
+- [x] Live URL accessible
 
 ---
 
 ## 🛠️ Technology Stack
 
 ### Backend
-├── Node.js (v14+) - JavaScript runtime
-├── Express.js - Web framework for APIs
-├── MongoDB Atlas - Cloud NoSQL database
-├── bcryptjs - Password hashing
-└── dotenv - Environment variables
-
+| Technology | Purpose |
+|------------|---------|
+| Node.js | JavaScript runtime |
+| Express.js | REST API framework |
+| MongoDB Atlas | Cloud NoSQL database |
+| bcryptjs | Password hashing |
+| dotenv | Environment variables |
 
 ### Frontend
-├── HTML5 - Structure
-├── CSS3 - Styling (modern gradients, flexbox, grid)
-├── Vanilla JavaScript - No frameworks, pure JS
-└── Responsive Design - Works on mobile, tablet, desktop
-
+| Technology | Purpose |
+|------------|---------|
+| HTML5 | Structure |
+| CSS3 | Styling with gradients & animations |
+| Vanilla JavaScript | Logic & API calls |
+| Fetch API | AJAX requests |
 
 ### Deployment
-└── Railway.app - Cloud hosting (free tier)
-
+| Platform | Purpose |
+|----------|---------|
+| Railway | Cloud hosting (free tier) |
+| GitHub | Version control |
 
 ---
 
 ## 📊 Database Schema
 
 ### Users Collection
-```json
+```javascript
 {
-  "_id": "ObjectId",
-  "name": "String (required)",
-  "email": "String (required, unique)",
-  "password": "String (hashed with bcrypt)",
-  "role": "String ('admin' or 'member')",
-  "createdAt": "Date"
+  _id: ObjectId,
+  name: String,
+  email: String (unique),
+  password: String (bcrypt hashed),
+  role: "admin" | "member",
+  createdAt: Date
 }
-
-Project Collection
-{
-  "_id": "ObjectId",
-  "name": "String (required)",
-  "description": "String",
-  "createdAt": "Date",
-  "createdBy": "String (user email or ID)"
-}
-
-Task Collection
-{
-  "_id": "ObjectId",
-  "title": "String (required)",
-  "projectId": "ObjectId (references projects)",
-  "assigneeEmail": "String (references users.email)",
-  "dueDate": "Date (optional)",
-  "status": "String ('pending', 'in-progress', 'done')",
-  "createdAt": "Date",
-  "updatedAt": "Date"
-} 	 	
-
-Relationship Diagram
-Users (1) ──────< Tasks (Many)
-             (assigneeEmail)
-
-Projects (1) ──< Tasks (Many)
-             (projectId)
