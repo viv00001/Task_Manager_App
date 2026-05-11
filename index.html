@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Team Task Manager with MongoDB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fc 0%, #eef2f9 100%);
+            min-height: 100vh;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #06d6a0;
+            --warning: #ffb703;
+            --danger: #ef476f;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-600: #6c757d;
+            --gray-800: #212529;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+            --radius: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #4361ee15, #7209b715);
+        }
+
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 28px;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 460px;
+        }
+
+        .auth-card h2 {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 28px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-800);
+            font-size: 14px;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 14px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(67, 97, 238, 0.3);
+        }
+
+        .switch-auth {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--gray-600);
+        }
+
+        .switch-auth span {
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .navbar {
+            background: white;
+            padding: 16px 32px;
+            border-radius: 100px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .role-badge {
+            background: var(--gray-200);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            padding: 8px 20px;
+            width: auto;
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--gray-800);
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        .task-item, .project-item {
+            background: var(--gray-100);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-weight: 700;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-pending { background: var(--warning); color: #000; }
+        .status-in-progress { background: var(--primary); color: white; }
+        .status-done { background: var(--success); color: white; }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 13px;
+            width: auto;
+            background: var(--danger);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .overdue {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2col { grid-template-columns: 1fr; }
+            .navbar { flex-direction: column; gap: 12px; border-radius: 24px; }
+            table { font-size: 12px; }
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .message.error { background: #ffe0e7; color: var(--danger); display: block; }
+        .message.success { background: #e0f7f2; color: var(--success); display: block; }
+        .message.loading { background: #e3f2fd; color: var(--primary); display: block; }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-600);
+        }
+
+        select.status-update {
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- AUTH CONTAINER -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-card">
+            <h2 id="authTitle">Welcome to TaskFlow</h2>
+            <div id="authMessage" class="message"></div>
+            <form id="authForm">
+                <div class="input-group" id="nameField">
+                    <label>Full Name</label>
+                    <input type="text" id="name" placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="hello@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="••••••" required>
+                </div>
+                <button type="submit" id="authSubmitBtn">Login</button>
+            </form>
+            <div class="switch-auth">
+                <span id="toggleAuthMode">Don't have an account? Sign up</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="container dashboard">
+        <div class="navbar">
+            <div class="logo">📋 TaskFlow</div>
+            <div class="user-info">
+                <span id="userNameDisplay"></span>
+                <span id="userRoleBadge" class="role-badge"></span>
+                <button id="logoutBtn" class="logout-btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="grid-2col">
+            <div class="card">
+                <h3>📊 Task Overview</h3>
+                <div id="statsSummary">Loading stats...</div>
+            </div>
+            <div class="card">
+                <h3>➕ Quick Actions</h3>
+                <div id="quickActions">
+                    <button id="createProjectBtn" style="margin-bottom: 10px; background: var(--secondary);">+ New Project</button>
+                    <button id="createTaskBtn" style="background: var(--primary);">+ New Task</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2col">
+            <div class="card">
+                <h3>📁 Projects</h3>
+                <div id="projectsList">Loading projects...</div>
+            </div>
+            <div class="card">
+                <h3>✅ My Tasks</h3>
+                <div id="tasksList">Loading tasks...</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📋 All Tasks</h3>
+            <div style="overflow-x: auto;">
+                <table id="allTasksTable">
+                    <thead>
+                        <tr><th>Task</th><th>Project</th><th>Assignee</th><th>Due Date</th><th>Status</th><th>Action</th></tr>
+                    </thead>
+                    <tbody><tr><td colspan="6">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // API Base URL (empty means same origin)
+    const API_BASE = '';
+    
+    let currentUser = null;
+    let allProjects = [];
+    let allTasks = [];
+
+    // Helper function for API calls
+    async function apiCall(endpoint, options = {}) {
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(currentUser && { 'user-role': currentUser.role, 'user-email': currentUser.email }),
+            ...options.headers
+        };
+        
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            ...options,
+            headers
+        });
+        
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Something went wrong');
+        }
+        return data;
+    }
+
+    // Show message in auth container
+    function showMessage(msg, type) {
+        const msgDiv = document.getElementById('authMessage');
+        msgDiv.innerText = msg;
+        msgDiv.className = `message ${type}`;
+        setTimeout(() => {
+            msgDiv.style.display = 'none';
+            msgDiv.className = 'message';
+        }, 3000);
+    }
+
+    // Load dashboard data from real database
+    async function loadDashboardData() {
+        if (!currentUser) return;
+        
+        try {
+            // Load projects
+            const projects = await apiCall('/api/projects');
+            allProjects = projects;
+            document.getElementById('projectsList').innerHTML = projects.map(p => `
+                <div class="project-item">
+                    <div class="flex-between">
+                        <strong>📌 ${escapeHtml(p.name)}</strong>
+                        ${currentUser.role === 'admin' ? `<button class="btn-sm" onclick="deleteProject('${p.id}')">Delete</button>` : ''}
+                    </div>
+                    <small>${escapeHtml(p.description || 'No description')}</small>
+                </div>
+            `).join('') || '<p>No projects. Create one!</p>';
+            
+            // Load tasks
+            const tasks = await apiCall(`/api/tasks?userRole=${currentUser.role}&userEmail=${currentUser.email}`);
+            allTasks = tasks;
+            
+            // My tasks (assigned to current user)
+            const myTasks = tasks.filter(t => t.assigneeEmail === currentUser.email);
+            document.getElementById('tasksList').innerHTML = myTasks.map(t => {
+                const project = allProjects.find(p => p.id === t.projectId);
+                const isOverdue = t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'done';
+                return `
+                    <div class="task-item">
+                        <div class="task-header">
+                            <span class="task-title">${escapeHtml(t.title)}</span>
+                            <span class="status-badge status-${t.status}">${t.status}</span>
+                        </div>
+                        <div>Project: ${escapeHtml(project?.name || 'Unknown')}</div>
+                        <div>Due: ${t.dueDate || 'No date'} ${isOverdue ? '<span class="overdue">(Overdue!)</span>' : ''}</div>
+                        <div style="margin-top: 8px;">
+                            <select onchange="updateTaskStatus('${t.id}', this.value)" class="status-update">
+                                <option value="pending" ${t.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="in-progress" ${t.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="done" ${t.status === 'done' ? 'selected' : ''}>Done</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<p>No tasks assigned to you.</p>';
+            
+            // All tasks table
+            const tableBody = document.querySelector('#allTasksTable tbody');
+            let displayTasks = tasks;
+            tableBody.innerHTML = displayTasks.map(t => {
+                const project = allProjects.find(p => p.id === t.projectId);
+                const isOverdue = t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'done';
+                return `
+                    <tr>
+                        <td>${escapeHtml(t.title)}</td>
+                        <td>${escapeHtml(project?.name || '?')}</td>
+                        <td>${escapeHtml(t.assigneeEmail)}</td>
+                        <td class="${isOverdue ? 'overdue' : ''}">${t.dueDate || '—'}</td>
+                        <td>${t.status}</td>
+                        <td>
+                            <select onchange="updateTaskStatus('${t.id}', this.value)" class="status-update">
+                                <option value="pending" ${t.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="in-progress" ${t.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                                <option value="done" ${t.status === 'done' ? 'selected' : ''}>Done</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Load stats
+            const stats = await apiCall(`/api/stats/${encodeURIComponent(currentUser.email)}`);
+            document.getElementById('statsSummary').innerHTML = `
+                <div>📌 Total Tasks: ${stats.total}</div>
+                <div>⏳ Pending: ${stats.pending} | 🔄 In Progress: ${stats.inProgress}</div>
+                <div>✅ Completed: ${stats.done} | ⚠️ Overdue: ${stats.overdue}</div>
+            `;
+            
+        } catch (error) {
+            console.error('Load data error:', error);
+            document.getElementById('projectsList').innerHTML = '<p>Error loading data. Make sure server is running.</p>';
+        }
+    }
+
+    // Create Project
+    async function createProject() {
+        if (currentUser.role !== 'admin') {
+            alert('Only admins can create projects');
+            return;
+        }
+        const name = prompt('Project name:');
+        if (!name) return;
+        const description = prompt('Description (optional):');
+        
+        try {
+            await apiCall('/api/projects', {
+                method: 'POST',
+                body: JSON.stringify({ name, description, userRole: currentUser.role, userId: currentUser.id })
+            });
+            await loadDashboardData();
+            showMessage('Project created successfully!', 'success');
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+    
+    // Create Task
+    async function createTask() {
+        if (allProjects.length === 0) {
+            alert('Create a project first!');
+            return;
+        }
+        
+        const title = prompt('Task title:');
+        if (!title) return;
+        
+        const projectList = allProjects.map(p => `${p.id.substring(0,8)} - ${p.name}`).join('\n');
+        const projectId = prompt(`Enter Project ID:\n${projectList}\n\nPaste the Project ID:`);
+        if (!projectId) return;
+        
+        const assigneeEmail = prompt('Assignee email (must be registered user):');
+        if (!assigneeEmail) return;
+        
+        const dueDate = prompt('Due date (YYYY-MM-DD) or leave empty:');
+        
+        try {
+            await apiCall('/api/tasks', {
+                method: 'POST',
+                body: JSON.stringify({ title, projectId, assigneeEmail, dueDate: dueDate || null, status: 'pending' })
+            });
+            await loadDashboardData();
+            showMessage('Task created successfully!', 'success');
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+    
+    // Update Task Status
+    window.updateTaskStatus = async function(taskId, newStatus) {
+        try {
+            await apiCall(`/api/tasks/${taskId}/status`, {
+                method: 'PUT',
+                body: JSON.stringify({ status: newStatus })
+            });
+            await loadDashboardData();
+            showMessage('Task status updated!', 'success');
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    };
+    
+    // Delete Project
+    window.deleteProject = async function(projectId) {
+        if (currentUser.role !== 'admin') {
+            alert('Only admins can delete projects');
+            return;
+        }
+        if (confirm('Delete this project and all its tasks?')) {
+            try {
+                await apiCall(`/api/projects/${projectId}`, { method: 'DELETE' });
+                await loadDashboardData();
+                showMessage('Project deleted!', 'success');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    };
+    
+    // Escape HTML to prevent XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Authentication
+    let isLoginMode = true;
+    
+    async function handleAuth(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value.trim();
+        
+        if (!email || !password) {
+            showMessage('Email and password required', 'error');
+            return;
+        }
+        
+        try {
+            if (isLoginMode) {
+                const data = await apiCall('/api/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                });
+                currentUser = data.user;
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('userNameDisplay').innerText = `${currentUser.name} (${currentUser.role})`;
+                document.getElementById('userRoleBadge').innerText = currentUser.role === 'admin' ? '👑 Admin' : '👤 Member';
+                
+                // Show/hide admin buttons
+                if (currentUser.role !== 'admin') {
+                    const createProjectBtn = document.getElementById('createProjectBtn');
+                    if (createProjectBtn) createProjectBtn.style.display = 'none';
+                }
+                
+                await loadDashboardData();
+            } else {
+                if (!name) {
+                    showMessage('Name required for signup', 'error');
+                    return;
+                }
+                const data = await apiCall('/api/auth/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, email, password })
+                });
+                currentUser = data.user;
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('userNameDisplay').innerText = `${currentUser.name} (${currentUser.role})`;
+                document.getElementById('userRoleBadge').innerText = currentUser.role === 'admin' ? '👑 Admin' : '👤 Member';
+                await loadDashboardData();
+                showMessage('Account created! Welcome!', 'success');
+            }
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
+    
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        const title = document.getElementById('authTitle');
+        const submitBtn = document.getElementById('authSubmitBtn');
+        const nameField = document.getElementById('nameField');
+        
+        if (isLoginMode) {
+            title.innerText = 'Welcome to TaskFlow';
+            submitBtn.innerText = 'Login';
+            document.getElementById('toggleAuthMode').innerHTML = "Don't have an account? Sign up";
+            nameField.style.display = 'block';
+        } else {
+            title.innerText = 'Create Account';
+            submitBtn.innerText = 'Sign Up';
+            document.getElementById('toggleAuthMode').innerHTML = "Already have an account? Login";
+            nameField.style.display = 'block';
+        }
+    }
+    
+    function logout() {
+        currentUser = null;
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('authContainer').style.display = 'flex';
+        document.getElementById('authForm').reset();
+    }
+    
+    // Event Listeners
+    document.getElementById('authForm').addEventListener('submit', handleAuth);
+    document.getElementById('toggleAuthMode').addEventListener('click', toggleAuthMode);
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('createProjectBtn')?.addEventListener('click', createProject);
+    document.getElementById('createTaskBtn')?.addEventListener('click', createTask);
+    
+    // Initial state
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('authContainer').style.display = 'flex';
+    document.getElementById('nameField').style.display = 'block';
+</script>
+</body>
+</html>
